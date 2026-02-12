@@ -1,0 +1,8 @@
+mcp[cli]
+httpx
+langgraph
+langchain
+langchain-openai
+fastapi
+unstructured[image,xlsx,pdf]
+pytesseract
