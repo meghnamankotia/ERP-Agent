@@ -6,3 +6,4 @@ langchain-openai
 fastapi
 unstructured[image,xlsx,pdf]
 pytesseract
+openai
