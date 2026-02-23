@@ -19,3 +19,4 @@ mcp.add_tool(
 )
 print("Starting MCP Server...")
 mcp.run(transport="streamable-http")
+#after running main.py run python -m app.agents.erp_agent to test the agent
