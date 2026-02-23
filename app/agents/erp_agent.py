@@ -16,6 +16,7 @@ async def run_agent(query:str)->list:
 
             #list available tools on server and bind them to the agent
             tools= await client.list_tools()
+            print("this is all tools present ", tools)
             tools=tools.tools
             tool_list=[
                 {
