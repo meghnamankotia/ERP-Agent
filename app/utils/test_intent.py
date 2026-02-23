@@ -43,7 +43,9 @@ def fileType(path:str):
     #return extension type
     if extension=="xlsx" or extension=="xls":
         return "xls"
-    supported_img=["jpeg", "jpg","png", "tiff","heic","bmp"]
+    supported_img=["jpeg", "jpg","png"]
+    if extension in supported_img:
+        return "img"
     if extension=="pdf":
         return "pdf"
     
@@ -59,5 +61,7 @@ def inputHandler(path:str)-> Student|str:
         return pdfInput(path)
     elif type=="xls":
         return xlsInput(path)
+    elif type=="img":
+        return imgInput(path)
     
     return "file type not supported"

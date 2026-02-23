@@ -6,5 +6,6 @@ load_dotenv()
 llm=ChatOpenAI(
     model="gpt-4.1",
     temperature=0,
-    timeout=1
+    timeout=60,
+    max_retries=3
 )

@@ -29,7 +29,7 @@ Instead of directly querying the database, the system:
 # 🏗️ System Architecture
 
 ```
-User → AI Orchestrator → ERP Backend → Database
+User → MCP Client → AI Orchestrator → MCP Server(tools) → ERP Backend → Database
 ```
 
 The AI layer:
@@ -70,10 +70,9 @@ ai-orchestrator/
 ## 🔹 app/main.py
 Application entry point.
 
-- Initializes FastAPI
-- Registers routes
-- Connects LangGraph workflow
-- Applies middleware
+- Initializes MCP Server
+- Defines server tools
+- Binds tools to the server
 
 ---
 
@@ -94,17 +93,17 @@ Application entry point.
 
 ## 🔹 agents/
 
-Handles all LLM-related logic.
+Handles all LLM-related logic, which is exposed via a MCP Client wrapper.
 
-- `erp_agent.py` – Wrapper around LLM
-- `prompt_templates.py` – Strict JSON prompts
+- `erp_agent.py` – MCP Client wrapper around LLM, handles how queries are run
+- `prompt_templates.py` – Strict string input prompts
 - `output_parsers.py` – Structured response validation
 
 ---
 
 ## 🔹 graph/
 
-LangGraph deterministic workflow.
+LangGraph deterministic workflow.(Not using langgraph)
 
 ### Execution Flow
 
@@ -124,7 +123,7 @@ ACTION EXECUTION
 RESPONSE FORMATTER
 ```
 
-Each node is isolated and testable.
+Each step is isolated and testable.
 
 ---
 
@@ -132,9 +131,7 @@ Each node is isolated and testable.
 
 Pydantic validation models:
 
-- `intent_schema.py`
-- `filter_schema.py`
-- `action_schema.py`
+- `base.py`
 
 Ensures strict structure enforcement.
 
@@ -147,7 +144,7 @@ Business logic layer.
 - `erp_api_client.py` – Calls ERP backend
 - `permission_service.py` – Role-based filtering
 - `query_builder.py` – Safe Mongo query generation
-- `metadata_registry.py` – Allowed fields & types
+- `metadata_registry.py` – Schema searches on metadate rich Vector DBs
 
 ---
 
@@ -156,7 +153,7 @@ Business logic layer.
 Conversation context storage.
 
 - `redis_memory.py`
-- `session_memory.py`
+- `mongo_memory.py` – Store conversation history
 
 Enables follow-up queries:
 
