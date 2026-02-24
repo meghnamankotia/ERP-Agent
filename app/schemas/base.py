@@ -1,5 +1,10 @@
 from pydantic import BaseModel, Field
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Optional
+
+#input model
+class Input(BaseModel):
+    text: str|None
+    file: str|None
 
 #student model
 class Student(BaseModel):
@@ -12,3 +17,9 @@ class Student(BaseModel):
     parent_contact: int
     #embed= name, address, parent contact
     #metadata= id, class, roll no, blood grp, age
+
+class FindQueryInput(BaseModel):
+    filters: dict
+    sort: Optional[list]=None
+    limit: Optional[int]=None
+    skip: Optional[int]=None
