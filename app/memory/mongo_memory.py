@@ -1,16 +1,15 @@
 #to store chat history
 from pymongo import MongoClient
-
+uri="SET_URI_STRING"
 def make_connection():
     print("making connection")
-    uri="mongodb+srv://meghnamankotia_db_user:pw4chat@chat-history.jd70bfh.mongodb.net/"
     client= MongoClient(uri)
     database= client["test"]
     collection= database["chat_history"]
     return collection
 
 def get_student_data():
-    client= MongoClient("mongodb+srv://meghnamankotia_db_user:pw4chat@chat-history.jd70bfh.mongodb.net/")
+    client= MongoClient(uri)
     database= client["test"]
     collection= database["studentdatas"]
     return collection
