@@ -17,5 +17,5 @@ def invoke_agent(request: Input):
 
     response = asyncio.run(run_agent(text))[1:]
     store_chat_history(response)
-    print("Chat history stored in db")
+    #print("Chat history stored in db")
     return {"response": response[-1]["content"]}
