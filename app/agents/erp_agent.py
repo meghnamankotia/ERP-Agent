@@ -1,8 +1,9 @@
 #design client 
 from app.config.llm_config import llm
-from mcp.client.streamable_http import streamable_http_client,StreamableHTTPTransport
+from mcp.client.streamable_http import streamable_http_client
 from mcp import ClientSession
 import asyncio
+from .prompt_templates import llm_prompt
 from app.utils.test_intent import inputHandler
 
 #mcp server url
@@ -31,7 +32,8 @@ async def run_agent(query:str)->list:
             bound_llm=llm.bind_tools(tool_list)
             
             
-            messages = [{
+            messages = [{"role": "system", "content": llm_prompt},
+                {
                 "role": "user",
                 "content": [
                     {"type": "text", "text": query}
@@ -51,18 +53,18 @@ async def run_agent(query:str)->list:
 
                 for tool in response.tool_calls:
                     tool_response=await client.call_tool(tool["name"], tool["args"])
+                    tool_text = "\n".join(
+                        block.text for block in tool_response.content
+                        if block.type == "text"
+                    )
                     messages.append({
                         "role":"tool",
                         "tool_call_id":tool["id"],
                         "content": [
                             {   
                                 "type": "text",
-                                "text": tool_response.content[0].text
+                                "text": tool_text
                             }
                         ]
                     })
             return messages
-
-# print(asyncio.run(run_agent("Add a student named Alan with roll no 2 in class 10 having bld grp A+. He is 15 years old and lives at 775 road and his parents can be contacted at 9980836133."))[-1]["content"])
-
-print(asyncio.run(run_agent(inputHandler("D:\\codes\\mcp-erp\\test\\test-pic.jpeg")))[-1]["content"])

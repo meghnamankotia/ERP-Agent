@@ -7,3 +7,5 @@ fastapi
 unstructured[image,xlsx,pdf]
 pytesseract
 openai
+pymongo
+pinecone
