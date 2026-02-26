@@ -64,16 +64,27 @@ def update_query(update_query_input: UpdateQueryInput):
     )
     ids = [doc["_id"] for doc in docs]
 
-    response = collection.update_many(
-        {"_id": {"$in": ids}},
-        update_query_input.update
-    )
-
     response= collection.update_many(update_query_input.filters, update_query_input.update)
+    print("called update query for", ids, "\nand filters, ", update_query_input.filters, "\nand update param",update_query_input.update )
     return {"matched_count": response.matched_count, "modified_count": response.modified_count, "ids": ids}
 
-def delete_query():
-    pass
+def delete_query(filters: dict, index:str):
+    """An MCP tool to perform delete operations for desired Mongo db records. The input consists of the filter({"_id": ObjectId}, etc) as well as the name of the collection/table from which we're deleting. The output is the ids of the records deleted."""
+    if "_id" in filters:
+        from bson import ObjectId
+        if "$eq" in filters["_id"]:
+            filters["_id"]= ObjectId(filters["_id"]["$eq"])
+        elif "$in" in filters["_id"]:
+            for i in filters["_id"]["$in"]:
+                filters["_id"]["$in"]= ObjectId(i)
+        elif type(filters["_id"])==str:
+            filters["_id"]= ObjectId(filters["_id"])
 
-def aggregation_query():
-    pass
+    collection= get_student_data()#pass index
+    response=collection.find(filters)
+    print("for filter", filters, "\n records returned-", response)
+    ids=[str(doc["_id"]) for doc in response]
+    print(ids)
+
+    collection.delete_many(filters)
+    return {"deleted records": ids}

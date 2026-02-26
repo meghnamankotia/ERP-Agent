@@ -1,6 +1,6 @@
 from mcp.server.fastmcp import FastMCP
-from services.query_builder import find_query, create_query, update_query
-from services.metadata_registry import schema_search, create_vector, update_vector
+from services.query_builder import find_query, create_query, update_query, delete_query
+from services.metadata_registry import schema_search, create_vector, delete_vector
 
 mcp=FastMCP("MCP Server-ERP")
 
@@ -27,6 +27,11 @@ mcp.add_tool(
     #structured_output=True
 )
 
+mcp.add_tool(
+    delete_query,
+    name="delete_query",
+    description="A tool to carry out delete operations for mongo db. The input consists of the table/collection name and the filters based on which the records are to be deleted."
+)
 #PINECONE VECTOR MEMORY TOOLS
 
 mcp.add_tool(
@@ -37,17 +42,21 @@ mcp.add_tool(
 )
 
 mcp.add_tool(
-    update_vector,
-    name="update_vector",
-    description="A tool to update vector data in the vector db.",
-    #structured_output=True
-)
-
-mcp.add_tool(
     schema_search,
     name="schema_search",
     description="Perform a schema search on the vector db inorder to retrieve information relevant to create a mongo query. For eg- User ids of students who are failing.",
     #structured_output=True
 )
+
+mcp.add_tool(
+    delete_vector,
+    name="delete_vector",
+    description="A tool to delete vectors from the vector db only after the successful deletion from the mongo db. The input consists of a list ids whose records are to be deleted as well as the name of the table/index from which they are to be deleted(string format)."
+)
+
+@mcp.resource("file://documents/{name}")
+async def get_schema(name: str)-> str:
+    pass
+
 print("Starting MCP Server...")
 mcp.run(transport="streamable-http")

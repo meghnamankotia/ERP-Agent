@@ -42,28 +42,33 @@ async def run_agent(query:str)->list:
             #invoke llm until query results are found
             while True:
                 response=bound_llm.invoke(messages)
-                messages.append({
+
+                if response.tool_calls:
+                    messages.append({
                     "role": "assistant",
                     "content": response.content,
                     "tool_calls": response.tool_calls
-                })
-                if not response.tool_calls:
-                    break
-
-                for tool in response.tool_calls:
-                    tool_response=await client.call_tool(tool["name"], tool["args"])
-                    tool_text = "\n".join(
-                        block.text for block in tool_response.content
-                        if block.type == "text"
-                    )
-                    messages.append({
-                        "role":"tool",
-                        "tool_call_id":tool["id"],
-                        "content": [
-                            {   
-                                "type": "text",
-                                "text": tool_text
-                            }
-                        ]
                     })
+                    for tool in response.tool_calls:
+                        tool_response=await client.call_tool(tool["name"], tool["args"])
+                        tool_text = "\n".join(
+                            block.text for block in tool_response.content
+                            if block.type == "text"
+                        )
+                        messages.append({
+                            "role":"tool",
+                            "tool_call_id":tool["id"],
+                            "content": [
+                                {   
+                                    "type": "text",
+                                    "text": tool_text
+                                }
+                            ]
+                        })
+                    continue
+                messages.append({
+                    "role":"assistant",
+                    "content":response.content
+                })
+                break
             return messages
