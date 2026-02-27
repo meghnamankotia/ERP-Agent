@@ -18,20 +18,14 @@ def get_client():
         _client.admin.command("ping")
     return _client
 
-def make_connection():
+def make_connection(collection_name:str):
     client= get_client()
     database= client["test"]
-    collection= database["chat_history"]
-    return collection
-
-def get_student_data():
-    client= get_client()
-    database= client["test"]
-    collection= database["studentdatas"]
+    collection= database[collection_name]
     return collection
 
 def store_chat_history(messages:list):
-    collection= make_connection()
+    collection= make_connection("chat_history")
     #store messages in db
     collection.insert_one({"messages":messages})
     return

@@ -30,6 +30,7 @@ def create_vector(input: VectorMemoryInput):
     for key,value in input.metadata.items():
         if key not in inputs:
             inputs[key]=value
+    print(idx, input)
     idx.upsert_records(namespace="__default__", records=[inputs])
     return "Vector data stored successfully"
 

@@ -33,34 +33,49 @@ class Teacher(BaseModel):
 #marksheet model
 class MarkSheet(BaseModel):
     student_id: Annotated[str, Field(description="The id of the student to which the marksheet belongs")]
-    score: list[dict]
+    score: list[dict[str,float]]
 
     @computed_field
     @property
-    def percentage(self)->float:
-        pass
+    def percentage(self)->Optional[float]:
+        sum=0
+        if not self.score: 
+            return None
+        for marks in self.score:
+            for key,value in marks.items():
+                sum+=value
+        percentage=sum/len(self.score)
+        return percentage
 
     @computed_field
     @property
-    def status(self)->bool:
-        pass
+    def status(self)->Optional[str]:
+        if not self.percentage:
+            return None
+        if self.percentage>= 33:
+            return 'pass'
+        return 'fail'
 
+#MONGO QUERY MODELS
 #find query input model
 class FindQueryInput(BaseModel):
-    filters: dict
+    idx_name:  Annotated[str, Field("Name of the table/collection to which the data has to be fetched.")]
+    filters:  Annotated[dict, Field(description="The filter criteria to identify which records to fetch.")]
     sort: Optional[list]=None
     limit: Optional[int]=None
     skip: Optional[int]=None
 
 #update query input model
 class UpdateQueryInput(BaseModel):
+    idx_name: Annotated[str, Field("Name of the table/collection to which the data has to be updated.")]
     filters: Annotated[dict, Field(description="The filter criteria to identify which records to update.")]
     update: Annotated[dict, Field(description="The update operations to apply to matching records.")]
 
-class CreateQuerryInput(BaseModel):
-    index: Annotated[str, Field("Name of the table/collection to which the data has to be added")]
+class CreateQueryInput(BaseModel):
+    idx_name: Annotated[str, Field("Name of the table/collection to which the data has to be added.")]
     data: Annotated[dict, Field("The input fields needed for the record creation as per the table")]
 
+#VECTOR QUERY MODELS
 #vector memory input model
 class VectorMemoryInput(BaseModel):
     idx_name: Annotated[str, Field(description="Name of the vector index to store the data in.")]

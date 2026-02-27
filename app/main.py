@@ -1,6 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 from services.query_builder import find_query, create_query, update_query, delete_query
 from services.metadata_registry import schema_search, create_vector, delete_vector
+from services.misc_helpers import fetch_schema, check_dependencies
 
 mcp=FastMCP("MCP Server-ERP")
 
@@ -54,9 +55,19 @@ mcp.add_tool(
     description="A tool to delete vectors from the vector db only after the successful deletion from the mongo db. The input consists of a list ids whose records are to be deleted as well as the name of the table/index from which they are to be deleted(string format)."
 )
 
-@mcp.resource("file://documents/{name}")
-async def get_schema(name: str)-> str:
-    pass
+
+#TABLE STRUCTURES RESOURCE-TOOL
+mcp.add_tool(
+    fetch_schema,
+    name="fetch_schema",
+    description="A tool to retrieve the fields/schema of a particular table in the school db. Essential to carry out every query."
+)
+
+mcp.add_tool(
+    check_dependencies,
+    name="check_dependencies",
+    description="A tool to retrieve a list of names containing tables that are dependent on the input table. Input is name of table in the form of a string."
+)
 
 print("Starting MCP Server...")
 mcp.run(transport="streamable-http")
